@@ -1,10 +1,12 @@
 // map mobile scrollbar 
 const map = document.querySelector('.map__main-svg');
 
-if (map && window.innerWidth <= 768) {
+if (map) {
     const scrollbarThumb = document.querySelector('.map__main-scrollbar span');
+    const svgElem = map.querySelector('svg');
+    const mapLabel = map.querySelector('.map__main-label');
 
-    const mapWidth = map.querySelector('svg').getBoundingClientRect().width;
+    const mapWidth = svgElem.getBoundingClientRect().width;
     const containerWidth = document.querySelector('.map__main').getBoundingClientRect().width;
 
     let scrollLeft = map.scrollLeft
@@ -17,13 +19,69 @@ if (map && window.innerWidth <= 768) {
     scrollbarThumb.style.maxWidth = mapVisibleWidth + '%';
     scrollbarThumb.style.left = 0
 
-    map.addEventListener('scroll', () => {
-        scrollLeft = map.scrollLeft
-        scrollPercent = scrollLeft / (mapWidth - containerWidth)
-        scrollBarScroll = mapHiddenWidth * scrollPercent
-        scrollbarThumb.style.left = scrollBarScroll + '%';
-    })
+    if (window.innerWidth <= 768) {
+        map.addEventListener('scroll', () => {
+            scrollLeft = map.scrollLeft
+            scrollPercent = scrollLeft / (mapWidth - containerWidth)
+            scrollBarScroll = mapHiddenWidth * scrollPercent
+            scrollbarThumb.style.left = scrollBarScroll + '%';
+        })
+    }
+    else {
+
+        let enter = false;
+        svgElem.querySelectorAll('path').forEach(path => {
+            path.addEventListener('mouseenter', (e) => {
+                enter = true;
+
+                if (!mapLabel.classList.contains('_active')) {
+                    mapLabel.classList.add('_active')
+                }
+
+                const pos = getWindowRelativeOffset(svgElem, path);
+
+                mapLabel.textContent = path.dataset.title;
+                mapLabel.style.left = pos.left + 'px';
+                mapLabel.style.top = pos.top + 'px';
+
+                if (path.hasAttribute('data-right')) {
+                    mapLabel.style.left = pos.right + 'px';
+                }
+                else {
+                    mapLabel.style.left = pos.left + 'px';
+                }
+
+                console.log(pos);
+            })
+
+            path.addEventListener('mouseleave', (e) => { 
+                enter = false
+                setTimeout(() => {
+                    if (enter == false) {
+                        mapLabel.classList.remove('_active')
+                    }
+                }, 500);
+            })
+        })
+
+        svgElem.addEventListener('mouseleave', () => {
+            mapLabel.classList.remove('_active')
+        })
+    }
 }
+
+function getWindowRelativeOffset(parent, elem) {
+    let left = elem.getBoundingClientRect().left - parent.getBoundingClientRect().left + elem.getBoundingClientRect().width / 2;
+    let right = elem.getBoundingClientRect().left - parent.getBoundingClientRect().left - elem.getBoundingClientRect().width / 2;
+    let top = elem.getBoundingClientRect().top - parent.getBoundingClientRect().top - 70;
+
+    return {
+        left,
+        right,
+        top,
+    };
+};
+
 
 const mapResult = document.querySelector('.result-map')
 document.addEventListener('click', function (e) {
