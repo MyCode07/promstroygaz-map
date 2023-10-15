@@ -50,8 +50,6 @@ if (map) {
                 else {
                     mapLabel.style.left = pos.left + 'px';
                 }
-
-                console.log(pos);
             })
 
             path.addEventListener('mouseleave', (e) => { 
@@ -91,17 +89,32 @@ document.addEventListener('click', function (e) {
         map.classList.add('_hide')
         document.querySelector('.map__main-scrollbar').classList.add('_hide')
         mapResult.classList.add('_open')
-        mapResult.querySelector('.result-map__map img').src = 'img/regions/RU-' + targetEl.dataset.url + '.svg';
+        mapResult.querySelector('.result-map__map img').src = 'assets/new-map/img/regions/RU-' + targetEl.dataset.url + '.svg';
 
         const regionTitle = targetEl.dataset.title ? targetEl.dataset.title : 'Регион не определен';
-        const regionFilials = `<li>Филиалы в регионе</li>` ? `<li>Филиалы в регионе</li>` : `<li>Регион не определен</li>`;
 
         const data = {
             'title': regionTitle,
-            'regions': regionFilials
+            'regions': ''
         }
 
-        getRegionData(data)
+        BX.ajax({
+            url: '/assets/new-map/ajax.php',
+            data: {
+                id: targetEl.dataset.id
+            },
+            method: 'POST',
+            dataType: 'json',
+            timeout: 10,
+            onsuccess: function (res) {
+                data.regions = res
+                getRegionData(data)
+            },
+            onfailure: e => {
+                console.error('error')
+            }
+        })
+
     }
 
     if (targetEl.classList.contains('result-map__close')) {
@@ -125,5 +138,5 @@ function getRegionData(data) {
 
     titleElem.textContent = data.title;
 
-    regionFilialList.insertAdjacentHTML('beforeend', data.regions);
+    regionFilialList.insertAdjacentHTML('beforeend', data.regions.text);
 }
