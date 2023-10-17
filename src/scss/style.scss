@@ -221,11 +221,13 @@
 
     &__map {
         flex: 1 1 auto;
+        padding-right: 40px;
 
         @media (max-width: 768px) {
             width: 100%;
             overflow: hidden;
             margin-bottom: 30px;
+            padding-right: 0;
         }
 
         img {
