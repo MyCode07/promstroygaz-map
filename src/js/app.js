@@ -80,13 +80,15 @@ function getWindowRelativeOffset(parent, elem) {
 };
 
 
-const mapResult = document.querySelector('.result-map')
+const mapResult = document.querySelector('.result-map');
+const mapLoading = document.querySelector('.map__main-svg-loading');
 document.addEventListener('click', function (e) {
     let targetEl = e.target;
 
     if (targetEl.classList.contains('has-filial')) {
-        const regionTitle = targetEl.dataset.title ? targetEl.dataset.title : 'Регион не определен';
+        mapLoading.classList.add('_open')
 
+        const regionTitle = targetEl.dataset.title ? targetEl.dataset.title : 'Регион не определен';
         const data = {
             'title': regionTitle,
             'regions': ''
@@ -108,13 +110,18 @@ document.addEventListener('click', function (e) {
             },
             onfailure: e => {
                 console.error('error')
+                mapLoading.classList.remove('_open')
             }
         })
 
     }
 
     if (targetEl.classList.contains('result-map__close')) {
-        map.classList.remove('_hide')
+        document.body.classList.remove('_noscroll')
+
+        mapLoading.classList.remove('_open')
+        mapLoading.classList.remove('_hide')
+
         document.querySelector('.map__main-scrollbar').classList.remove('_hide')
         mapResult.classList.remove('_open')
     }
@@ -122,8 +129,11 @@ document.addEventListener('click', function (e) {
 
 
 function openMapResult(targetEl) {
-    map.classList.add('_hide')
+    document.body.classList.add('_noscroll')
+
+    mapLoading.classList.add('_hide')
     document.querySelector('.map__main-scrollbar').classList.add('_hide')
+
     mapResult.classList.add('_open')
     mapResult.querySelector('.result-map__map img').src = '';
     mapResult.querySelector('.result-map__map img').src = 'assets/new-map/img/regions/RU-' + targetEl.dataset.url + '.svg';
