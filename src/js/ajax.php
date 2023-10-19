@@ -6,7 +6,8 @@ $region_html = '';
 if (!empty($_POST['id'])){
 
     $arFilter=array(
-        "IBLOCK_ID" => 30,
+        "IBLOCK_ID" => 3,
+        'SECTION_ID'=> $_POST['district_id'],
         "ID" => $_POST['id'],
     );
 
@@ -25,15 +26,18 @@ if (!empty($_POST['id'])){
             $arElemFields = $projResElem->GetFields();
 
             $arSelFlds["NAME"] = $arElemFields["NAME"];
-            $arSelFlds["DETAIL_PAGE_URL"] = $arElemFields["DETAIL_PAGE_URL"];
 
-            $phone_res = CIBlockElement::GetProperty(30, $arElemFields["ID"], array(), array('CODE'=>'PHONE'));
+            $url_res = CIBlockElement::GetProperty(3, $arElemFields["ID"], array(), array('CODE'=>'MAIN_DOMAIN'));
+            $url = $url_res->Fetch();
+            $arSelFlds["MAIN_DOMAIN"] = $url['VALUE'];
+
+            $phone_res = CIBlockElement::GetProperty(3, $arElemFields["ID"], array(), array('CODE'=>'PHONES'));
             $phone = $phone_res->Fetch();
             $arSelFlds["PHONE"] = $phone['VALUE'];
 
-            $address_res = CIBlockElement::GetProperty(30, $arElemFields["ID"], array(), array("CODE"=>"ADDRESS"));
+            $address_res = CIBlockElement::GetProperty(3, $arElemFields["ID"], array(), array("CODE"=>"ADDRESS"));
             $address = $address_res->Fetch();
-            $arSelFlds["ADDRESS"] = $address['VALUE'];
+            $arSelFlds["ADDRESS"] = $address['VALUE']['TEXT'];
 
             $ar_result[$arrkey]["ITEMS"][] = $arSelFlds;
         }
@@ -43,7 +47,7 @@ if (!empty($_POST['id'])){
         // "<h4>".$arrValues["NAME"]."</h4>";
         if(is_array($arrValues["ITEMS"]) && count($arrValues["ITEMS"]) > 0){
             foreach ($arrValues["ITEMS"] as $arrItem){
-                $region_html .= '<li><a href="'.$arrItem["DETAIL_PAGE_URL"].'" target="_blank"><label>'.$arrItem["NAME"].'</label><p><span>'.$arrItem["ADDRESS"].'</span><span>'.$arrItem["PHONE"].'</span></p><div class="icon"></div></a></li>'; 
+                $region_html .= '<li><a href="https://'.$arrItem["MAIN_DOMAIN"].'" target="_blank"><label>'.$arrItem["NAME"].'</label><p><span>'.$arrItem["ADDRESS"].'</span><span>'.$arrItem["PHONE"].'</span></p><div class="icon"></div></a></li>'; 
             }		
         }
     }	

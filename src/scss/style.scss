@@ -18,11 +18,12 @@
     margin: 0 auto;
     position: relative;
     margin-top: 40px;
+    margin-bottom: 40px;
 
     // .map__main-svg
 
     &-svg {
-        transition: all 0.3s ease 0s;
+        transition: all 0.5s ease 0s;
         position: relative;
 
         &._hide {
@@ -193,7 +194,7 @@
     z-index: 2;
     pointer-events: none;
     opacity: 0;
-    transition: all 0.3s ease 0s;
+    transition: all 0.5s ease 0s;
     background-color: var(--white);
 
     &._open {

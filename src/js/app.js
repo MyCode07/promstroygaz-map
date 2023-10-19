@@ -1,6 +1,5 @@
 // map mobile scrollbar 
 const map = document.querySelector('.map__main-svg');
-
 if (map) {
     const scrollbarThumb = document.querySelector('.map__main-scrollbar span');
     const svgElem = map.querySelector('svg');
@@ -52,7 +51,7 @@ if (map) {
                 }
             })
 
-            path.addEventListener('mouseleave', (e) => { 
+            path.addEventListener('mouseleave', (e) => {
                 enter = false
                 setTimeout(() => {
                     if (enter == false) {
@@ -86,11 +85,6 @@ document.addEventListener('click', function (e) {
     let targetEl = e.target;
 
     if (targetEl.classList.contains('has-filial')) {
-        map.classList.add('_hide')
-        document.querySelector('.map__main-scrollbar').classList.add('_hide')
-        mapResult.classList.add('_open')
-        mapResult.querySelector('.result-map__map img').src = 'assets/new-map/img/regions/RU-' + targetEl.dataset.url + '.svg';
-
         const regionTitle = targetEl.dataset.title ? targetEl.dataset.title : 'Регион не определен';
 
         const data = {
@@ -101,7 +95,8 @@ document.addEventListener('click', function (e) {
         BX.ajax({
             url: '/assets/new-map/ajax.php',
             data: {
-                id: targetEl.dataset.id
+                id: targetEl.dataset.id,
+                district_id: targetEl.dataset.districtId
             },
             method: 'POST',
             dataType: 'json',
@@ -109,6 +104,7 @@ document.addEventListener('click', function (e) {
             onsuccess: function (res) {
                 data.regions = res
                 getRegionData(data)
+                openMapResult(targetEl);
             },
             onfailure: e => {
                 console.error('error')
@@ -124,6 +120,14 @@ document.addEventListener('click', function (e) {
     }
 })
 
+
+function openMapResult(targetEl) {
+    map.classList.add('_hide')
+    document.querySelector('.map__main-scrollbar').classList.add('_hide')
+    mapResult.classList.add('_open')
+    mapResult.querySelector('.result-map__map img').src = '';
+    mapResult.querySelector('.result-map__map img').src = 'assets/new-map/img/regions/RU-' + targetEl.dataset.url + '.svg';
+}
 
 function getRegionData(data) {
     if (!data) return;
